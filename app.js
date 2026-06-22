@@ -1,57 +1,46 @@
-const API_URL = "https://inventario-backend1-1.onrender.com/productos";
-// 1. Función para obtener y listar productos
-async function obtenerProductos() {
-    try {
-        const respuesta = await fetch(API_URL);
-        const productos = await respuesta.json();
-        const tabla = document.getElementById('tabla');
-        
-        tabla.innerHTML = '';
-        
-        productos.forEach(prod => {
-            tabla.innerHTML += `
-                <tr>
-                    <td>${prod.nombre}</td>
-                    <td>$${prod.precio}</td>
-                    <td>${prod.existencia}</td>
-                    <td>
-                        <button onclick="eliminarProducto('${prod._id}')" style="background:red; color:white; border:none; cursor:pointer; padding:5px 10px;">Eliminar</button>
-                    </td>
-                </tr>
-            `;
-        });
-    } catch (error) {
-        console.error("Error al cargar productos:", error);
-    }
-}
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
 
-// 2. Función para registrar producto (Create)
-document.getElementById('formProducto').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const nuevoProducto = {
-        nombre: document.getElementById('nombre').value,
-        precio: document.getElementById('precio').value,
-        existencia: document.getElementById('existencia').value
-    };
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-    await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(nuevoProducto)
-    });
-    
-    e.target.reset(); // Limpia el formulario
-    obtenerProductos(); // Recarga la tabla
+// Conexión a MongoDB Atlas
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("Conexión exitosa a MongoDB Atlas"))
+  .catch(err => console.error("Error de conexión:", err));
+
+const ProductoSchema = new mongoose.Schema({
+  nombre: String,
+  precio: Number,
+  existencia: Number
 });
 
-// 3. Función para eliminar producto (Delete)
-async function eliminarProducto(id) {
-    if(confirm('¿Seguro que deseas eliminar este producto?')) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        obtenerProductos();
-    }
-}
+const Producto = mongoose.model('Producto', ProductoSchema);
 
-// Cargar productos al abrir la página
-obtenerProductos();
+// --- CRUD ---
+app.get('/productos', async (req, res) => {
+  const productos = await Producto.find();
+  res.json(productos);
+});
+
+app.post('/productos', async (req, res) => {
+  const nuevoProducto = new Producto(req.body);
+  await nuevoProducto.save();
+  res.json(nuevoProducto);
+});
+
+app.put('/productos/:id', async (req, res) => {
+  const productoActualizado = await Producto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  res.json(productoActualizado);
+});
+
+app.delete('/productos/:id', async (req, res) => {
+  await Producto.findByIdAndDelete(req.params.id);
+  res.json({ mensaje: "Eliminado" });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor activo en puerto ${PORT}`));
