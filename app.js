@@ -4,10 +4,11 @@ const API_URL = "https://inventario-backend1-1.onrender.com/productos";
 async function obtenerProductos() {
     try {
         const res = await fetch(API_URL);
+        if (!res.ok) throw new Error("Error al obtener productos");
         const productos = await res.json();
         mostrarTabla(productos);
     } catch (error) {
-        console.error("Error al obtener productos:", error);
+        console.error("Error en obtenerProductos:", error);
     }
 }
 
@@ -37,13 +38,18 @@ document.getElementById('formProducto').addEventListener('submit', async (e) => 
         existencia: document.getElementById('existencia').value
     };
 
-    await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(nuevoProducto)
-    });
-    e.target.reset();
-    obtenerProductos();
+    try {
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nuevoProducto)
+        });
+        if (!res.ok) throw new Error("Error en el POST");
+        e.target.reset();
+        obtenerProductos();
+    } catch (error) {
+        console.error("Error al guardar:", error);
+    }
 });
 
 // 4. Buscar / Filtrar
@@ -64,20 +70,28 @@ async function editarProducto(id, nombre, precio, existencia) {
     const e = prompt("Nueva cantidad:", existencia);
 
     if (n && p && e) {
-        await fetch(`${API_URL}/${id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ nombre: n, precio: p, existencia: e })
-        });
-        obtenerProductos();
+        try {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nombre: n, precio: p, existencia: e })
+            });
+            obtenerProductos();
+        } catch (error) {
+            console.error("Error al editar:", error);
+        }
     }
 }
 
 // 6. Eliminar (DELETE)
 async function eliminarProducto(id) {
     if(confirm('¿Seguro que deseas eliminar este producto?')) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        obtenerProductos();
+        try {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            obtenerProductos();
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+        }
     }
 }
 
