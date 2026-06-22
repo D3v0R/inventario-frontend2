@@ -1,4 +1,4 @@
-const API_URL = "https://inventario-backend1-1.onrender.com/productos";
+const API_URL = "https://inventario-backend2-m6hx.onrender.com/productos";
 
 // 1. Obtener y mostrar productos
 async function obtenerProductos() {
