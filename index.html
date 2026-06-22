@@ -3,43 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario NoSQL</title>
+    <title>Inventario | Gestión Profesional</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input, button { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
-        
-        /* Estilo para el buscador */
-        .busqueda-container { display: flex; gap: 10px; align-items: center; }
-        .btn-buscar { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; width: auto; padding: 10px 20px; }
-        
-        button { background: #0066cc; color: white; border: none; cursor: pointer; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #0066cc; color: white; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --card-bg: #ffffff;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); 
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        h2 { text-align: center; color: var(--text); margin-bottom: 30px; font-weight: 700; }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 12px; 
+            margin-bottom: 25px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        h3 { margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; color: var(--primary); }
+
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 6px; 
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { outline: none; border-color: var(--primary); ring: 2px solid var(--primary); }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 10px; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        button:hover { background: var(--primary-hover); }
+
+        .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-buscar { width: auto; padding: 0 20px; background: #64748b; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; }
+        th { background-color: #f1f5f9; padding: 15px; text-align: left; font-size: 0.9rem; color: #64748b; }
+        th:first-child { border-top-left-radius: 8px; }
+        th:last-child { border-top-right-radius: 8px; }
+        td { padding: 15px; border-bottom: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Inventario de productos</h2>
+    <h2>📦 Gestión de Inventario</h2>
     
     <div class="card">
-        <h3>Registrar Producto</h3>
+        <h3>Registrar Nuevo Producto</h3>
         <form id="formProducto">
-            <input type="text" id="nombre" placeholder="Nombre" required>
-            <input type="number" id="precio" placeholder="Precio" required>
-            <input type="number" id="existencia" placeholder="Stock" required>
-            <button type="submit">Guardar</button>
+            <input type="text" id="nombre" placeholder="Nombre del producto" required>
+            <input type="number" id="precio" placeholder="Precio ($)" required>
+            <input type="number" id="existencia" placeholder="Unidades en stock" required>
+            <button type="submit">Agregar al Inventario</button>
         </form>
     </div>
 
     <div class="card">
-        <h3>Existencias en Base de Datos</h3>
+        <h3>Lista de Inventario</h3>
         <div class="busqueda-container">
-            <input type="text" id="busqueda" placeholder="Buscar por nombre..." onkeyup="if(event.key === 'Enter') filtrarProductos()">
-            <button class="btn-buscar" onclick="filtrarProductos()">Buscar</button>
+            <input type="text" id="busqueda" placeholder="Buscar producto..." onkeyup="if(event.key === 'Enter') filtrarProductos()">
+            <button class="btn-buscar" onclick="filtrarProductos()">Filtrar</button>
         </div>
         
         <table>
